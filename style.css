@@ -29,7 +29,7 @@ ul {
 }
 .list {
   position:relative;
-  display: inline:block;
+  display: inline-block;
   vertical-align: top;
   white-space: normal;
   height: 100%;
