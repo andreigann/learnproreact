@@ -9,6 +9,7 @@
   "author": "Andrei Gherghel",
   "license": "ISC",
   "dependencies": {
+    "marked": "^0.3.5",
     "react": "^0.14.6",
     "react-dom": "^0.14.6"
   },
