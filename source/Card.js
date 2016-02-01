@@ -1,6 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import CheckList from './CheckList';
 import marked from 'marked';
+
+let titlePropType = (props, propName, componentName) => {
+  if (props[propName]) {
+    let value = props[propName];
+    if (typeof value !== 'string' || value.length > 80) {
+      `${propName} in ${componentName} is longer than 80 characters`
+    };
+  }
+}
 
 class Card extends Component {
     constructor() {
@@ -19,7 +28,8 @@ class Card extends Component {
             cardDetails = (
                 <div className="card__details">
                     <span dangerouslySetInnerHTML={{__html:marked(this.props.description)}} />
-                    <CheckList cardId={this.props.id} tasks={this.props.tasks}/>
+                    <CheckList cardId={this.props.id} tasks={this.props.tasks}
+                      taskCallbacks={this.props.taskCallbacks}/>
                 </div>
             );
         }
@@ -40,6 +50,15 @@ class Card extends Component {
             </div>
         );
     }
-}
+};
+
+Card.propTypes = {
+  id: PropTypes.number,
+  title: titlePropType,
+  description: PropTypes.string,
+  color: PropTypes.string,
+  tasks: PropTypes.arrayOf(PropTypes.object),
+  taskCallbacks: PropTypes.object
+};
 
 export default Card;
