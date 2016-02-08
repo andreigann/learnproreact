@@ -59,7 +59,7 @@ class KanbanBoardContainer extends Component {
     });
   }
   deleteTask(cardId, taskId, taskIndex) {
-    let cardIndex = this.state.cards.findIndex((card) => card.id = cardId);
+    let cardIndex = this.state.cards.findIndex((card) => card.id == cardId);
     let prevState = this.state;
     let nextState = update(this.state.cards, {
       [cardIndex]: {
@@ -83,7 +83,7 @@ class KanbanBoardContainer extends Component {
   }
   toggleTask(cardId, taskId, taskIndex) {
     let prevState = this.state;
-    let cardIndex = this.state.cards.findIndex((card) => card.id = cardId);
+    let cardIndex = this.state.cards.findIndex((card) => card.id == cardId);
     let newDoneValue;
     let nextState = update(this.state.cards, {
       [cardIndex]: {
