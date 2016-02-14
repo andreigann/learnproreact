@@ -87,7 +87,7 @@ Card.propTypes = {
   tasks: PropTypes.arrayOf(PropTypes.object),
   taskCallbacks: PropTypes.object,
   cardCallbacks: PropTypes.object,
-  connectDragSource: Proptypes.func.isRequired
+  connectDragSource: PropTypes.func.isRequired
 };
 
 export default DragSource(constants.CARD, cardDragSpec, collectDrag)(Card);
