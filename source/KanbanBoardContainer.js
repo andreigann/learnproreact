@@ -3,6 +3,7 @@ import KanbanBoard from './KanbanBoard';
 import 'whatwg-fetch';
 import 'babel-polyfill';
 import update from 'react-addons-update';
+import { throttle } from './utils';
 
 const API_URL = 'http://kanbanapi.pro-react.com';
 const API_HEADERS = {
@@ -16,7 +17,11 @@ class KanbanBoardContainer extends Component {
     this.state = {
       cards: []
     }
+
+    this.updateCardStatus = throttle(this.updateCardStatus.bind(this));
+    this.updateCardPosition = throttle(this.updateCardPosition.bind(this), 500);
   }
+
   componentDidMount() {
     fetch(API_URL + '/cards', {headers: API_HEADERS})
     .then((response) => response.json())
@@ -27,6 +32,7 @@ class KanbanBoardContainer extends Component {
       console.log('Error fetching and parsing data', error);
     });
   }
+
   addTask(cardId, taskName) {
     let prevState = this.state;
     let cardIndex = this.state.cards.findIndex((card) => card.id == cardId);
@@ -58,8 +64,9 @@ class KanbanBoardContainer extends Component {
       this.setState(prevState);
     });
   }
+
   deleteTask(cardId, taskId, taskIndex) {
-    let cardIndex = this.state.cards.findIndex((card) => card.id = cardId);
+    let cardIndex = this.state.cards.findIndex((card) => card.id == cardId);
     let prevState = this.state;
     let nextState = update(this.state.cards, {
       [cardIndex]: {
@@ -81,9 +88,10 @@ class KanbanBoardContainer extends Component {
       this.setState(prevState);
     });
   }
+
   toggleTask(cardId, taskId, taskIndex) {
     let prevState = this.state;
-    let cardIndex = this.state.cards.findIndex((card) => card.id = cardId);
+    let cardIndex = this.state.cards.findIndex((card) => card.id == cardId);
     let newDoneValue;
     let nextState = update(this.state.cards, {
       [cardIndex]: {
@@ -114,13 +122,49 @@ class KanbanBoardContainer extends Component {
       this.setState(prevState);
     });
   }
+
+  updateCardStatus(cardId, listId) {
+    let cardIndex = this.state.cards.findIndex((card) => card.id == cardId);
+    let card = this.state.cards[cardIndex]
+    if (card.status !== listId) {
+      this.setState(update(this.state, {
+        cards: {
+          [cardIndex]: {
+            status: { $set: listId }
+          }
+        }
+      }));
+    }
+  }
+
+  updateCardPosition(cardId, afterId) {
+    if (cardId !== afterId) {
+      let cardIndex = this.state.cards.findIndex((card) => card.id == cardId);
+      let card = this.state.cards[cardIndex]
+      let afterIndex = this.state.cards.findIndex((card) => card.id == afterId);
+      this.setState(update(this.state, {
+        cards: {
+          $splice: [
+            [cardIndex, 1],
+            [afterIndex, 0, card]
+          ]
+        }
+      }));
+    }
+  }
+
   render() {
     return <KanbanBoard cards={this.state.cards}
       taskCallbacks={{
         toggle: this.toggleTask.bind(this),
         delete: this.deleteTask.bind(this),
         add: this.addTask.bind(this)
-      }}/>
+      }}
+      cardCallbacks={{
+        updateStatus: this.updateCardStatus,
+        updatePosition: this.updateCardPosition
+      }}
+      />
   }
 }
 
